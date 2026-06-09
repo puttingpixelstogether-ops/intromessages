@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kamil Krupski - Lead Product Designer at Circle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Satoshi:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #101038;
+    --surface: #13133E;
+    --border: rgba(255,255,255,0.07);
+    --text: #EEF0FF;
+    --text-muted: rgba(200,208,255,0.55);
+    --text-dim: rgba(200,208,255,0.28);
+    --accent: #4F72FF;
+    --accent-dim: rgba(79,114,255,0.14);
+    --accent-glow: rgba(79,114,255,0.35);
+    --sans: "Satoshi", -apple-system, sans-serif;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.75;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  canvas#bg {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+  .wrap {
+    position: relative; z-index: 1;
+    max-width: 1170px; margin: 0 auto;
+    padding: 120px 60px 180px;
+  }
+  body { position: relative; }
+  header { margin-bottom: 108px; animation: fadeUp 0.8s ease both; }
+  .eyebrow {
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(200,208,255,0.6); margin-bottom: 30px;
+  }
+  h1 {
+    font-size: clamp(52px, 5vw, 78px);
+    font-weight: 900; line-height: 1.06;
+    color: var(--text); letter-spacing: -0.025em; margin-bottom: 42px;
+  }
+  h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+  .intro-para {
+    font-size: 20px; line-height: 1.85;
+    color: var(--text-muted); max-width: 840px; font-weight: 400;
+  }
+  .intro-para strong { color: var(--text); font-weight: 600; }
+  .pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 36px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(79,114,255,0.22); border-radius: 100px;
+    padding: 7px 16px; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.05em; color: var(--text-muted);
+    background: rgba(79,114,255,0.06);
+    transition: border-color 0.2s, color 0.2s; white-space: nowrap;
+  }
+  .pill:hover { border-color: rgba(79,114,255,0.5); color: var(--text); }
+  .pill-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); opacity: 0.7; flex-shrink: 0;
+  }
+  .section-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.2em;
+    text-transform: uppercase; color: rgba(200,208,255,0.45);
+    margin-bottom: 36px; display: flex; align-items: center; gap: 18px;
+  }
+  .section-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  .table-section { margin-bottom: 96px; animation: fadeUp 0.8s 0.2s ease both; }
+
+  /* Two-column layout: need (1/3) | answer+evidence (2/3) */
+  .req-list { list-style: none; padding: 0; margin: 0; }
+  .req-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0 56px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .req-item:last-child { border-bottom: none; }
+  .req-item:hover { background: rgba(79,114,255,0.025); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+
+  .req-need {
+    font-size: 16px; font-weight: 500;
+    color: var(--text); line-height: 1.65;
+    padding-right: 8px;
+    padding-top: 2px;
+  }
+  .req-need::before {
+    content: "\201C";
+    color: var(--accent);
+    font-size: 22px;
+    font-weight: 700;
+    margin-right: 2px;
+    line-height: 0;
+    vertical-align: -4px;
+    opacity: 0.6;
+  }
+
+  .req-right { display: flex; flex-direction: column; gap: 10px; }
+
+  .req-answer {
+    font-size: 18px; font-weight: 600;
+    color: var(--text); line-height: 1.5;
+  }
+
+  .req-evidence {
+    font-size: 16px; color: var(--text-muted); line-height: 1.7;
+  }
+
+  /* keep existing helpers working inside evidence */
+  .req-evidence .tag { display: inline-block; }
+  .req-evidence .metric {
+    font-size: 40px; font-weight: 900; color: var(--text);
+    display: block; margin-bottom: 4px; line-height: 1; letter-spacing: -0.03em;
+  }
+  .req-evidence ul.evidence { margin-top: 2px; }
+  .req-evidence ul.evidence li { font-size: 16px; }
+
+  @media (max-width: 720px) {
+    .req-item { grid-template-columns: 1fr; gap: 10px; }
+    .req-item:hover { margin: 0; padding-left: 0; padding-right: 0; }
+  }
+  .tag {
+    display: inline-block; background: rgba(79,114,255,0.12); color: rgba(200,208,255,0.7);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 3px; margin-bottom: 10px;
+  }
+  .metric {
+    font-size: 46px; font-weight: 900; color: var(--text);
+    display: block; margin-bottom: 6px; line-height: 1; letter-spacing: -0.03em;
+  }
+  ul.evidence { list-style: none; padding: 0; }
+  ul.evidence li { padding-left: 21px; position: relative; margin-bottom: 6px; font-size: 17px; }
+  ul.evidence li::before { content: "\2014"; position: absolute; left: 0; color: var(--text-dim); }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(79,114,255,0.3); transition: border-color 0.2s; }
+  a:hover { border-color: var(--accent); }
+  .beyond-section { margin-bottom: 96px; animation: fadeUp 0.8s 0.35s ease both; }
+  .beyond-para { font-size: 20px; line-height: 1.85; color: var(--text-muted); max-width: 840px; }
+  .beyond-para strong { color: var(--text); font-weight: 600; }
+  .cta-section { animation: fadeUp 0.8s 0.5s ease both; padding-top: 12px; }
+  .cta-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 48px 54px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface);
+  }
+  .cta-text { font-size: 18px; color: var(--text-muted); max-width: 600px; }
+  .cta-text strong { display: block; font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 9px; letter-spacing: -0.01em; }
+  .cta-link {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--accent); color: #fff; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 18px 30px;
+    border-radius: 4px; border: none; text-decoration: none; white-space: nowrap;
+    transition: opacity 0.2s; flex-shrink: 0;
+  }
+  .cta-link:hover { opacity: 0.85; border-bottom: none; }
+  .cta-link svg { width: 16px; height: 16px; }
+  footer {
+    margin-top: 120px; padding-top: 36px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.06em;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 600px) {
+    .wrap { padding: 72px 24px 120px; }
+    .cta-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+  }
+  mark { background: none; color: inherit; }
+  .hx-underline { position: relative; display: inline; color: var(--text-muted); padding-bottom: 2px; }
+  .hx-underline::before { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); pointer-events: none; }
+  .hx-underline.is-active { color: var(--text); transition: color 0.35s 0.55s ease; }
+  .hx-underline.is-active::before { width: 100%; transition: width 0.6s cubic-bezier(0.76, 0, 0.24, 1); }
+
+  .hero-img-wrap {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 520px;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+    opacity: 0.55;
+  }
+  .hero-img-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(16,16,56,0) 0%,
+      rgba(16,16,56,0) 40%,
+      rgba(16,16,56,0.7) 75%,
+      rgba(16,16,56,1) 100%
+    );
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="hero-img-wrap">
+  <img src="images/top.png" alt="" class="hero-img">
+  <div class="hero-img-fade"></div>
+</div>
+
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Re: Lead Product Designer&mdash;Circle</p>
+        <div class="pills">
+      <span class="pill"><span class="pill-dot"></span>SaaS &middot; Gaming &middot; EdTech &middot; Web3</span>
+      <span class="pill"><span class="pill-dot"></span>AI Workflows and Prototyping</span>
+      <span class="pill"><span class="pill-dot"></span>Design systems</span>
+      <span class="pill"><span class="pill-dot"></span>IC &amp; lead</span>
+      <span class="pill"><span class="pill-dot"></span>Paris-based, remote-native</span>
+    </div>
+    <br />
+    <h1>Kamil Krupski</h1>
+    
+    <p class="intro-para">
+      Your posting is about <mark class="hx-underline" data-text="defining the problem, shaping the direction, shipping the experience">defining the problem, shaping the direction, shipping the experience</mark>. It&rsquo;s how I&rsquo;ve worked my whole career and what I seek. Below is how my background maps to what you&rsquo;re looking for.
+    </p>
+
+  </header>
+
+  <div class="table-section">
+    <p class="section-label">Requirements mapping</p>
+    <ul class="req-list">
+        <li class="req-item">
+          <div class="req-need">We collaborate across time zones, are highly async, and like to document a lot.</div>
+          <div class="req-right">
+            <div class="req-answer"><mark class="hx-underline" data-text="I'm remote native">I'm remote native</mark>, and obsessed with <mark class="hx-underline" data-text="documenting everything that needs documenting">documenting everything that needs documenting</mark>.</div>
+            <div class="req-evidence">I worked for years with US teams from SF to NY while living in Europe. I also built and managed a 20-person design team spread from Thailand, through Europe, to the Caribbean.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">You define the problem, shape the direction, and ship the experience&mdash;not wait for a brief.</div>
+          <div class="req-right">
+            <div class="req-answer"><mark class="hx-underline" data-text="I never wait for a brief">I never wait for a brief</mark>. I focus on understanding problems and reframing them to reach the essence.</div>
+            <div class="req-evidence">Agency and initiative are a prerequisite for real passion for the product. At Sololearn I ran discovery, set design strategy, and shipped across a 23M user platform&mdash;not as a downstream executor but as a peer to PM and engineering.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">You&rsquo;ll report into the product design organisation and work as the most senior design IC on your product area, partnering directly with product managers, engineers, and design leadership.</div>
+          <div class="req-right">
+            <div class="req-answer">For the last 6 years I was always the most senior designer in the organisation.</div>
+            <div class="req-evidence">I&rsquo;m comfortable leading the vision as well as supporting an established one. I&rsquo;ve mentored at every level&mdash;from first-job ICs to experienced seniors&mdash;and built Sololearn&rsquo;s design team from 1 to 20 across three continents.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">AI is not a section on this job description&mdash;it&rsquo;s how we work.</div>
+          <div class="req-right">
+            <div class="req-answer"><mark class="hx-underline" data-text="Claude Code and ComfyUI are part of my daily routine.">Claude Code and ComfyUI are part of my daily routine.</mark></div>
+            <div class="req-evidence">Recently I built <a href="https://ffit.app" target="_blank">FFIT</a> and <a href="https://fromsoft-art-tracker.vercel.app" target="_blank">Artborne</a>, while also creating a tool for freelancers that converts audio messages into task lists (Node.js + PostgreSQL + Whisper + WhatsApp Cloud API&mdash;currently in testing): <a href="https://ekote.app" target="_blank">ekoté</a>. On top, I&rsquo;ve built workflows for ComfyUI and Weave for asset creation.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">Drive the craft standard on your area&mdash;interaction design, visual quality, and the small details that separate polished product from &ldquo;good enough&rdquo;</div>
+          <div class="req-right">
+            <div class="req-answer">I&rsquo;m <mark class="hx-underline" data-text="pathologically unsatisfied">pathologically unsatisfied</mark>, for better or worse.</div>
+            <div class="req-evidence">&lsquo;How can we make it better?&rsquo; is constantly in my mind even if the thing is close to ideal. Token-based design system at Sololearn: 65% fewer components, 70% less tech debt. Not because I was asked&mdash;because the mess bothered me.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">Influence product strategy beyond your own surface</div>
+          <div class="req-right">
+            <div class="req-answer">I have experience defining the whole design strategy and building robust roadmaps.</div>
+            <div class="req-evidence">But I also solved problems through casual conversations with different teams while playing ping pong. I don&rsquo;t overextend&mdash;I contribute where it matters and know when to stop.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">5&ndash;7+ experience, portfolio showing system thinking, multi user flows</div>
+          <div class="req-right">
+            <div class="req-answer"><mark class="hx-underline" data-text="13 years of IC and 7 years of management experience">13 years of IC and 7 years of management experience</mark>.</div>
+            <div class="req-evidence">As a gamer and sometimes game designer, I naturally think in systems. I shipped 0&rarr;1 products solo with AI tooling, led complex multi-user platform design at scale, and consistently shaped product direction&mdash;not just the interface.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">Exceptional written and verbal communication</div>
+          <div class="req-right">
+            <div class="req-answer">I helped create the narrative that led <mark class="hx-underline" data-text="Sololearn to $24M Series B">Sololearn to $24M Series B</mark>.</div>
+            <div class="req-evidence">In my free time I&rsquo;m writing horror and weird fiction. I can comfortably adjust my communication style to the audience.</div>
+          </div>
+        </li>
+
+        <li class="req-item">
+          <div class="req-need">Strong alignment with our values</div>
+          <div class="req-right">
+            <div class="req-answer">Low time preference. No ego. Obsessive.</div>
+            <div class="req-evidence">I trust that people I work with are as passionate as I am and want to do great things together. I love fast progress, and I care more about what a product becomes long-term than what low-value metric I can artificially raise to land a bonus.</div>
+          </div>
+        </li>
+
+      </ul>
+  </div>
+
+  <div class="beyond-section">
+    <p class="section-label">Why Circle specifically</p>
+    <p class="beyond-para">
+      MEE6&rsquo;s 19M communities is the closest analogue in my CV&mdash;and the problems are familiar: creator tools vs. member experience, multi-user flows that have to feel simple, <mark class="hx-underline" data-text="scale that can&rsquo;t break craft">scale that can&rsquo;t break craft</mark>. Circle&rsquo;s platform has that tension in every surface. That&rsquo;s not something I&rsquo;d be learning to navigate&mdash;it&rsquo;s something I&rsquo;ve already been navigating.
+      The AI-first design culture is also genuinely rare at this level. Most teams still treat it as a side experiment. <mark class="hx-underline" data-text="I want to be somewhere past that conversation">I want to be somewhere past that conversation</mark>.
+    </p>
+  </div>
+
+  <div class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-text">
+        <strong>Let&rsquo;s talk</strong>
+        krupski.kamil@protonmail.com &nbsp;&middot;&nbsp; +33 767 976 423
+      </div>
+      <a href="mailto:krupski.kamil@protonmail.com" class="cta-link">
+        Get in touch
+        <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 11L11 1M11 1H4M11 1V8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <span>Kamil Krupski &middot; Product Designer</span>
+    <span>krupski.kamil@protonmail.com</span>
+  </footer>
+
+</div>
+
+<script>
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+let W, H, nodes, frame;
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function init() {
+  const count = Math.floor((W * H) / 18000);
+  nodes = Array.from({ length: count }, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random() - 0.5) * 0.18, vy: (Math.random() - 0.5) * 0.18,
+    r: Math.random() * 1.2 + 0.3,
+  }));
+}
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 130) {
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(79,114,255," + ((1 - dist/130)*0.10) + ")";
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  nodes.forEach(n => {
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(79,114,255,0.45)"; ctx.fill();
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  });
+  frame = requestAnimationFrame(draw);
+}
+window.addEventListener("resize", () => { resize(); cancelAnimationFrame(frame); init(); draw(); });
+resize(); init(); draw();
+</script>
+
+<script>
+(function() {
+  const items = document.querySelectorAll(".hx-underline");
+  if (!items.length) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add("is-active"); io.unobserve(entry.target); }
+    });
+  }, { threshold: 0.6 });
+  items.forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
